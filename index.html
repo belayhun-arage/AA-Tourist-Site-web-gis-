@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="../webgis/public/style.css" type="text/css">
+    <link rel="stylesheet" href="../webgis/public/libs/v6.5.0/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="../webgis/public/libs/v6.5.0/examples/resources/layout.css" type="text/css">
+    <link rel="stylesheet" href="../webgis/public/libs/ol-layerswitcher/dist/ol-layerswitcher.css" />
+    <link rel="stylesheet" href="../webgis/public/libs/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../webgis/public/libs/v6.5.0/build/ol.js"></script>
+    <script src="../webgis/public/libs/ol-layerswitcher/dist/ol-layerswitcher.js"></script>
+    <script type="text/javascript" src="../webgis/public/libs/bootstrap.min.js"></script>
+    <script type = "text/javascript"  src="./measureDistance.js"></script>
+
+    <!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
+    <script src="https://unpkg.com/elm-pep"></script>
+    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+    <script src="https://cdn.polyfill.io/v3/polyfill.min.js?features=fetch,requestAnimationFrame,Element.prototype.classList,URL,TextDecoder,Number.isInteger"></script>
+
+    <title>webgis</title>
+</head>
+<body>
+    <div id="left-column">
+        <div class="img__wrap">
+            <img src="./public/images/Balambaras.jpg" class="left-row-1"></img>
+            <div class="img__description_layer">
+                <p class="img__description">Balambaras.</p>
+              </div>
+        </div>
+        <div class="img__wrap" >
+            <img src="./public/images/MinellikSquare.jpg" class="left-row-2"></img>
+            <div class="img__description_layer">
+                <p class="img__description">MinellikSquare</p>
+              </div>
+        </div>
+        <div class="img__wrap">
+            <img src="./public/images/Tayitu_Hotel.jpg" class="left-row-3" ></img>
+            <div class="img__description_layer">
+                <p class="img__description">Tayitu_Hotel</p>
+              </div>
+        </div>
+        <div class="img__wrap">
+            <img src="./public/images/trinity.jpg" class="left-row-3" ></img>
+            <div class="img__description_layer">
+                <p class="img__description">trinity</p>
+              </div>
+        </div>
+        <div class="img__wrap">
+            <img src="./public/images/Ampire.jpg" class="left-row-3" ></img>
+            <div class="img__description_layer">
+                <p class="img__description">Ampire</p>
+              </div>
+        </div>
+        
+    </div>
+    <div id="middle">
+        <div id="title"><h4 class="title">Addis Ababa City Tourist Site</h4></div>
+        <div id="map">
+            <div id = "legend"></div>
+            <div id="mouth-position" class="mouth-position"></div>
+            <div id="scale-line" class="scale-line"></div>
+            <button onclick="get_info()" id="get_info">Get Feature-Info</button>
+            <button onclick="select_feature()" id="select_feature" disabled = "true">Select</button>
+            <button onclick="create_feature()" id="create_feature" disabled = "true">Create</button>
+            <button onclick="modify_feature()" id="modify_feature" disabled = "true">Modify </button>
+            <button onclick="delete_feature()" id="delete_feature" disabled = "true">Delete feature</button>
+            <button onclick="toggle_editing()" id="toggle_editing">Toggle Editing</button>
+            <button onclick="measureDistance()" id="measure_distance">Measure Distance</button>
+            <div id="select-by-attribute">
+                    <select name="places" id="places" onChange="select_by_attribute()">
+                        <option value="none">Select place here</option>
+                        <option value="Abune Aregawi Church">Abune Aregawi Church</option>
+                        <option value="Abune Petros Monument">Abune Petros Monument</option>
+                        <option value="Africa park/Addis-Ethio-Africa">Africa park/Addis-Ethio-Africa</option>
+                        <option value="Genete Leul Palace">Genete Leul Palace</option>
+                        <option value="Teshome Berhe Residence">Teshome Berhe Residence</option>
+                        <option value="Kolfe park">Kolfe park</option>
+                        <option value="Entoto museum">Entoto museum</option>
+                        <option value="Empress Menen Girls School">Empress Menen Girls School</option>
+                        <option value="Emperor Menelik Monument">Emperor Menelik Monument</option>
+                        <option value="The Holy Trinity Cathedral">The Holy Trinity Cathedral</option>
+                        <option value="Sheik Hojele Palace">Sheik Hojele Palace</option>
+                        <option value="Ras Mekonen monument">Ras Mekonen monument</option>
+                        <option value="Police Camp">Police Camp</option>
+                        <option value="Bayush Mosque">Bayush Mosque</option>
+                    </select>
+            </div>
+            
+        </div>
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div id="popup-content"></div>
+        </div>
+        <div id="info">&nbsp;</div>
+        <div class="container">
+            <div id="info" style="display: none;"></div>
+            <label for="track">
+              track position
+              <input id="track" type="checkbox"/>
+            </label>
+            <p>
+              positionshowingtouser: <code id="positionshowingtouser1"></code>&nbsp;&nbsp;
+              position accuracy : <code id="accuracy"></code>&nbsp;&nbsp;
+              altitude : <code id="altitude"></code>&nbsp;&nbsp;
+              altitude accuracy : <code id="altitudeAccuracy"></code>&nbsp;&nbsp;
+              heading : <code id="heading"></code>&nbsp;&nbsp;
+              speed : <code id="speed"></code>
+            </p>
+        </div>
+    </div>
+    
+    <div id="right-column">
+        <div class="img__wrap">
+            <img src="./public/images/saint george.jpg" class="left-row-1"></img>
+            <div class="img__description_layer">
+                <p class="img__description">saint george</p>
+              </div>
+        </div>
+        <div class="img__wrap" >
+            <img src="./public/images/miazia 27.jpg" class="right-row-1"></img>
+            <div class="img__description_layer">
+                <p class="img__description">miazia 27</p>
+              </div>
+        </div>
+        <div class="img__wrap">
+            <img src="./public/images/ethiological museum.jpg" class="right-row-1"></img>
+            <div class="img__description_layer">
+                <p class="img__description">ethiological museum</p>
+              </div>
+        </div>
+        <div class="img__wrap">
+            <img src="./public/images/Sheik Hojele.jpg" class="right-row-1"></img>
+            <div class="img__description_layer">
+                <p class="img__description">Sheik Hojele</p>
+              </div>
+        </div>
+        <div class="img__wrap">
+            <img src="./public/images/tegebareid.jpg" class="right-row-1"></img>
+            <div class="img__description_layer">
+                <p class="img__description">tegebareid</p>
+              </div>
+        </div>
+        
+    </div>
+<script type = "text/javascript" >
+var map, geojson,newGeojson,heatMapLayer, layer_name, layerSwitcher, featureOverlay, highlightStyle, modify, select_point, snap_edit, url, overlays, pop, state_name, feature, myFeature, content1;
+var del_fts = new Array();
+var container = document.getElementById('popup');
+var content = document.getElementById('popup-content');
+var closer = document.getElementById('popup-closer');
+
+/**
+ * Create an overlay to anchor the popup to the map.
+ */
+var overlay = new ol.Overlay({element: container,autoPan: true,autoPanAnimation: {duration: 250}});
+
+/**
+ * Add a click handler to hide the popup.
+ * @return {boolean} Don't follow the href.
+ */
+closer.onclick = function() {
+    overlay.setPosition(undefined);
+    closer.blur();
+    return false;
+};
+
+var view = new ol.View({projection: 'EPSG:4326',center: [38.551, 9.0],zoom: 5,});
+var view_ov = new ol.View({projection: 'EPSG:4326',center: [38.931, 9.0],zoom: 5,});
+var base_maps = new ol.layer.Group({
+    'title': 'Base maps',
+    layers: [
+        new ol.layer.Tile({
+            title: 'OSM',
+            type: 'base',
+            visible: true,
+            source: new ol.source.OSM()
+        }),
+
+        new ol.layer.Tile({
+            title: 'Satellite',
+            type: 'base',
+            visible: true,
+            source: new ol.source.XYZ({
+                attributions: ['Powered by Esri',
+                    'Source: Esri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, and the GIS User Community'
+                ],
+                attributionsCollapsible: false,
+                url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                maxZoom: 23
+            })
+        })
+    ]
+});
+var OSM = new ol.layer.Tile({source: new ol.source.OSM(),type: 'base',title: 'OSM',});
+var overlays = new ol.layer.Group({'title': 'Overlays',
+    layers: [
+        new ol.layer.Image({
+            title: 'addis_ababa_city',
+                source: new ol.source.ImageWMS({
+                    url: 'http://localhost:8080/geoserver/wms',
+                    params: {'LAYERS': 'etiopia:addis_ababa_city'},
+                    ratio: 1,
+                    serverType: 'geoserver'
+                })
+        }),
+        new ol.layer.Image({
+            title: 'tourist_site',
+                source: new ol.source.ImageWMS({
+                    url: 'http://localhost:8080/geoserver/wms',
+                    params: {'LAYERS': 'etiopia:tourist_site'},
+                    ratio: 1,
+                    serverType: 'geoserver'
+                })
+        })
+	]
+});
+var mouse_position = new ol.control.MousePosition({target: document.getElementById('mouth-position')});
+var overview = new ol.control.OverviewMap({view: view_ov,collapseLabel: 'O',label: 'O',layers: [OSM]});
+var full_sc = new ol.control.FullScreen({label: 'F'});
+var zoom = new ol.control.Zoom({zoomInLabel: '+',zoomOutLabel: '-'});
+var slider = new ol.control.ZoomSlider();
+var zoom_ex = new ol.control.ZoomToExtent({extent: [38.700221, 8.85,40.230, 9.0022231444]});
+var scale=new ol.control.ScaleLine({target: document.getElementById('scale-line')})
+var layerSwitcher = new ol.control.LayerSwitcher({
+    activationMode: 'click',
+    startActive: true,
+    tipLabel: 'Layers', // Optional label for button
+    groupSelectStyle: 'children', // Can be 'children' [default], 'group' or 'none'
+    collapseTipLabel: 'Collapse layers',
+});
+
+map = new ol.Map({target: 'map',view: view,overlays: [overlay]});
+    map.addLayer(base_maps);
+    map.addLayer(overlays);
+    map.addControl(slider);
+    map.addControl(scale)
+    map.addControl(zoom);
+    map.addControl(full_sc);
+    map.addControl(overview);
+    map.addControl(mouse_position);
+    map.addControl(zoom_ex);    
+    map.addControl(layerSwitcher);
+
+    var geolocation = new ol.Geolocation({
+        // enableHighAccuracy must be set to true to have the heading value.
+        trackingOptions: {
+          enableHighAccuracy: true
+        },
+        projection: map.getView().getProjection(),
+        tracking: true
+      });
+
+      var iconStyle = new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 6,
+            fill: new ol.style.Fill({
+            color: '#3399CC'
+            }),
+            stroke: new ol.style.Stroke({
+            color: '#fff',
+            width: 2
+            })
+  })
+});
+
+var iconFeature = new ol.Feature();   
+var iconSource = new ol.source.Vector({
+  features: [iconFeature]
+});    
+var iconLayer = new ol.layer.Vector({
+  source: iconSource,
+  style : iconStyle
+});
+
+map.addLayer(iconLayer);
+      function el(id) {
+        return document.getElementById(id);
+      }
+
+      el('track').addEventListener('change', function() {
+        geolocation.setTracking(this.checked);
+      });
+
+      // update the HTML page when the position changes.
+      geolocation.on('change', function() {
+	    el('positionshowingtouser1').innerText = geolocation.getPosition();
+        el('accuracy').innerText = geolocation.getAccuracy() + ' [m]';
+        el('altitude').innerText = geolocation.getAltitude() + ' [m]';
+        el('altitudeAccuracy').innerText = geolocation.getAltitudeAccuracy() + ' [m]';
+        el('heading').innerText = geolocation.getHeading() + ' [rad]';
+        el('speed').innerText = geolocation.getSpeed() + ' [m/s]';
+      });
+
+      geolocation.on('change:position', function() {
+  var pos = geolocation.getPosition();
+  iconFeature.setGeometry(new ol.geom.Point(pos));
+  map.getView().fit(iconFeature.getGeometry());
+  map.getView().setZoom(4); 
+});
+
+      // handle geolocation error.
+      geolocation.on('error', function(error) {
+        var info = document.getElementById('info');
+        info.innerHTML = error.message;
+        info.style.display = '';
+      });
+
+      var accuracyFeature = new ol.Feature();
+      geolocation.on('change:accuracyGeometry', function() {
+        accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
+      });
+
+      var positionFeature = new ol.Feature();
+      positionFeature.setStyle(new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 6,
+          fill: new ol.style.Fill({
+            color: '#3399CC'
+          }),
+          stroke: new ol.style.Stroke({
+            color: '#fff',
+            width: 2
+          })
+        })}))
+
+function legend () {
+		
+		$('#legend').empty();
+		
+		var no_layers = overlays.getLayers().get('length');
+	
+		var head = document.createElement("h4");
+		
+        var txt = document.createTextNode("Legend");
+		
+       head.appendChild(txt);
+	   var element = document.getElementById("legend");
+       element.appendChild(head);
+		var ar = [];
+		var i;
+		for (i = 0; i < no_layers; i++) {
+		ar.push("http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+overlays.getLayers().item(i).get('title'));
+		//alert(overlays.getLayers().item(i).get('title'));
+		}
+		for (i = 0; i < no_layers; i++) {
+		var head = document.createElement("p");
+		
+        var txt = document.createTextNode(overlays.getLayers().item(i).get('title'));
+		//alert(txt[i]);
+       head.appendChild(txt);
+	   var element = document.getElementById("legend");
+       element.appendChild(head);
+		 var img = new Image();
+       img.src = ar[i];
+      var src = document.getElementById("legend");
+      src.appendChild(img);
+     }
+	 
+	 }
+	 
+	 legend();
+     
+var url="http://localhost:8080/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=etiopia:tourist_site&outputFormat=application/json"
+var style = new ol.style.Style({
+    fill: new ol.style.Fill({
+        color: 'rgba(255, 255, 255, 0.1)'
+    }),
+    stroke: new ol.style.Stroke({
+        color: '#ffcc33',
+        width: 3
+    }),
+
+    image: new ol.style.Circle({
+        radius: 7,
+        fill: new ol.style.Fill({
+            color: '#ffcc33'
+        })
+    })
+});
+
+geojson = new ol.layer.Vector({
+    title: 'WFS_layer',
+    source: new ol.source.Vector({
+        url: url,
+        format: new ol.format.GeoJSON()
+    }),
+    style: style,
+
+});
+geojson.getSource().on('addfeature', function() {
+    map.getView().fit(
+        geojson.getSource().getExtent(), {
+            duration: 1590,
+            size: map.getSize()
+        }
+    );
+});
+ overlays.getLayers().push(geojson);
+
+layerSwitcher.renderPanel();
+
+highlightStyle = new ol.style.Style({
+    fill: new ol.style.Fill({
+        color: 'rgba(255,255,255,0.4)',
+    }),
+    stroke: new ol.style.Stroke({
+        color: '#3399CC',
+        width: 3,
+    }),
+    image: new ol.style.Circle({
+        radius: 10,
+        fill: new ol.style.Fill({
+            color: '#3399CC'
+        })
+    })
+});
+
+featureOverlay = new ol.layer.Vector({
+    title: 'high',
+    source: new ol.source.Vector(),
+    map: map,
+    style: highlightStyle
+});
+
+layerSwitcher.renderPanel();
+
+function toggle_editing() {
+    
+    var color = $('#toggle_editing').css("background-color");
+    if (color == 'rgb(239, 239, 239)') {
+        document.getElementById("get_info").style.backgroundColor = '';	
+        document.getElementById("toggle_editing").style.backgroundColor = 'coral';
+        document.getElementById("select_feature").style.backgroundColor = '';
+        document.getElementById("create_feature").style.backgroundColor = '';
+        document.getElementById("modify_feature").style.backgroundColor = '';
+        //document.getElementById("measureDistance").style.backgroundColor='';
+	    
+		document.getElementById("select_feature").disabled = false;
+        document.getElementById("create_feature").disabled = false;
+        document.getElementById("modify_feature").disabled = false;
+		document.getElementById("delete_feature").disabled = false;
+       // document.getElementById("measureDistance").disabled = false;
+
+
+		
+		document.getElementById("get_info").disabled = true;
+	    map.un('singleclick', getinfo);
+        map.removeInteraction(draw)
+		overlay.setPosition(undefined);
+        closer.blur();
+	
+	}else if (color == 'rgb(255, 127, 80)') {
+	    document.getElementById("toggle_editing").style.backgroundColor = '';
+        document.getElementById("select_feature").style.backgroundColor = '';
+        document.getElementById("create_feature").style.backgroundColor = '';
+        document.getElementById("modify_feature").style.backgroundColor = '';
+        //document.getElementById("measureDistance").style.backgroundColor='';
+	
+	    document.getElementById("select_feature").disabled = true;
+        document.getElementById("create_feature").disabled = true;
+        document.getElementById("modify_feature").disabled = true;
+		document.getElementById("delete_feature").disabled = true;
+       // document.getElementById("measureDistance").disabled = true;
+		
+		document.getElementById("get_info").disabled = false;
+		if (modify) {
+            map.removeInteraction(modify);
+        }
+        if (select_point) {
+            map.removeInteraction(select_point);
+        }
+        if (snap_edit) {
+            map.removeInteraction(snap_edit);
+        }
+	}
+    
+}
+
+function highlight(evt) {
+    
+    if (featureOverlay) {
+        featureOverlay.getSource().clear();
+        map.removeLayer(featureOverlay);
+    }
+
+    feature = map.forEachFeatureAtPixel(evt.pixel,
+        function(feature, layer) {
+            return feature;
+        });
+
+    if (feature) {
+        var coordinate = evt.coordinate;
+        var content1 = '<h3>' + feature.get('name') + '</h3>';
+            content1 += '<h5>' + feature.get('type') + '</h5>';
+            content1 += '<h5>' + feature.get('sub_city') + '</h5>';
+
+        content.innerHTML = content1;
+        overlay.setPosition(coordinate);
+        layerSwitcher.renderPanel();
+
+        featureOverlay.getSource().addFeature(feature);
+        map.updateSize();
+    } 
+}
+function highlight_mod_attributes(evt) {
+    if (featureOverlay) {
+        featureOverlay.getSource().clear();
+        map.removeLayer(featureOverlay);
+    }
+
+    feature = map.forEachFeatureAtPixel(evt.pixel,
+        function(feature, layer) {
+            return feature;
+        });
+
+    if (feature) {
+
+        var geometry = feature.getGeometry();
+        var coord = geometry.getCoordinates();
+        var coordinate = evt.coordinate;
+        
+        featureOverlay.getSource().addFeature(feature);
+
+        content1 = '<label for="name">name:</label><input type="text" id="name" name="name" value=' + feature.get('name') + '><br><br>';
+        content1 += '<label for="sub_city">sub_city:</label><input type="text" id="sub_city" name="sub_city" value=' + feature.get('sub_city') + '><br><br>';
+        content1 += ' <button onclick="save_mod_features()" id = "save_mod_features">Save Features</button>';
+        content1 += ' <button onclick="cancel_mod_features()" id = "cancel_mod_features">Cancel</button>';
+
+       
+        content.innerHTML = content1;
+        overlay.setPosition(coordinate);
+        layerSwitcher.renderPanel();
+
+    }
+    
+}
+
+
+function select_feature() {
+
+    document.getElementById("get_info").style.backgroundColor = '';
+    map.un('singleclick', get_info);
+    overlay.setPosition(undefined);
+    closer.blur();
+
+    document.getElementById("select_feature").style.backgroundColor = 'coral';
+    document.getElementById("create_feature").style.backgroundColor = '';
+    document.getElementById("modify_feature").style.backgroundColor = '';
+
+    if (select_point) {
+        map.removeInteraction(select_point);
+    }
+    if (modify) {
+        map.removeInteraction(modify);
+    }
+    if (snap_edit) {
+        map.removeInteraction(snap_edit);
+    }
+    map.on('click', highlight);
+}
+function create_feature() {
+    map.un('click', highlight_mod_attributes);
+    map.un('click', highlight);
+    document.getElementById("get_info").style.backgroundColor = '';
+    map.un('singleclick', getinfo);
+    overlay.setPosition(undefined);
+    closer.blur();
+
+    if (modify) {
+        map.removeInteraction(modify);
+    }
+    if (snap_edit) {
+        map.removeInteraction(snap_edit);
+    }
+    document.getElementById("create_feature").style.backgroundColor = 'coral';
+    document.getElementById("modify_feature").style.backgroundColor = '';
+    document.getElementById("select_feature").style.backgroundColor = '';
+
+
+    source_mod = geojson.getSource();
+    draw_add = new ol.interaction.Draw({
+        source: source_mod,
+        type: 'Point'
+    });
+    map.addInteraction(draw_add);
+    snap_edit = new ol.interaction.Snap({
+        source: source_mod
+    });
+    map.addInteraction(snap_edit);
+    draw_add.on('drawend',
+        function(e) {
+            myFeature = e.feature;
+            if (myFeature) {
+
+                var geometry = myFeature.getGeometry();
+                var coord = geometry.getCoordinates();
+                var extent = geometry.getExtent();
+                var centroid = ol.extent.getCenter(extent);
+                //alert(centroid);
+                //var coordinate = e.coordinate;
+
+                featureOverlay.getSource().addFeature(myFeature);
+                overlays.getLayers().push(featureOverlay);
+           
+                content1 = '<label for="name">name:</label><input type="text" id="name" name="name" value=' + myFeature.get('name') + '><br><br>';
+                content1 += '<label for="sub_city">sub_city:</label><input type="text" id="sub_city" name="sub_city" value=' + myFeature.get('sub_city') + '><br><br>';
+                content1 += '<label for="type">type:</label><input type="text" id="type" name="type" value=' + myFeature.get('type') + '><br><br>';
+                content1 += '<label for="latitude">latitude:</label><input type="numeric" id="latitude" name="latitude" value=' + myFeature.get('latitude') + '><br><br>';
+                content1 += '<label for="longitude">longitude:</label><input type="numeric" id="longitude" name="longitude" value=' + myFeature.get('longitude') + '><br><br>';
+                content1 += ' <button onclick="save_created()" id = "save_created">Save Feature</button>';
+                content1 += ' <button onclick="cancel_created()" id = "cancel_created">Delete Feature</button>';
+                content.innerHTML = content1;
+                overlay.setPosition(centroid);
+
+            }
+    
+        }, this);
+
+    geojson.getSource().on('addfeature', function() {
+        var features = geojson.getSource().getFeatures();
+        var length = features.length;
+        // alert(length);
+    });
+
+
+
+}
+const makeRequest = (method, url, data = {}) => {
+  const xhr = new XMLHttpRequest();
+  return new Promise(resolve => {
+    xhr.open(method, url, true);
+    xhr.onload = () => resolve({
+      status: xhr.status,
+      response: xhr.responseText
+    });
+    xhr.onerror = () => resolve({
+      status: xhr.status,
+      response: xhr.responseText
+    });
+    if (method != 'GET') xhr.setRequestHeader('Content-type', 'text/xml') && xhr.setRequestHeader('User-Agent', 'XMLHTTP/1.0');;
+    data != {} ? xhr.send(data) : xhr.send();
+  })
+}
+async function save_created() {
+    namee = document.getElementById("name").value;
+    sub_city = document.getElementById("sub_city").value;
+    type = document.getElementById("type").value;
+    longitude =parseFloat(document.getElementById("longitude").value) ;
+    latitude = parseFloat(document.getElementById("latitude").value) ;
+
+    var coords = myFeature.getGeometry();
+    var format = new ol.format.GML({
+        srsName: 'urn:ogc:def:crs:EPSG::4326'
+
+    });
+
+    var gml3 = format.writeGeometry(coords, { 
+            featureProjection: 'urn:ogc:def:crs:EPSG::4326',
+        }
+    );
+    //alert(gml3.getGeometry)
+    var postData1 =
+        '<wfs:Transaction service="WFS" version="1.1.0"\n' +
+        'xmlns:etiopia="www.etiopia.com"\n' +
+        'xmlns:ogc="http://www.opengis.net/ogc"\n' +
+        'xmlns:wfs="http://www.opengis.net/wfs"\n' +
+        'xmlns:gml="http://www.opengis.net/gml"\n' +
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' +
+        'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp">' +
+            '<wfs:Insert>\n' +
+                '<etiopia:tourist_site>\n' +
+                    '<etiopia:the_geom>\n'+
+                        '<gml:Point srsDimension="2" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">\n'+
+                            '<gml:pos>\n'+latitude+' '+longitude+'</gml:pos>\n'+
+                        '</gml:Point>\n'+
+                    '</etiopia:the_geom>\n'+
+                    '<etiopia:name>' + namee + '</etiopia:name>\n' +
+                    '<etiopia:sub_city>' + sub_city + '</etiopia:sub_city>\n' +
+                    '<etiopia:type>' + type + '</etiopia:type>\n' +
+                    '<etiopia:latitude>' + latitude + '</etiopia:latitude>\n' +
+                    '<etiopia:longitude>' + longitude + '</etiopia:longitude>\n' +
+                '</etiopia:tourist_site>\n' +
+            '</wfs:Insert>\n' +
+        '</wfs:Transaction>\n';
+
+        console.log("Starting request ...")
+        let request=await makeRequest('POST','http://localhost:8080/geoserver/wfs',postData1)
+        console.log("status:", request.status)
+        console.log("response:", request.response)
+        if(request.status==200){
+            alert('Feature created successfully');
+            geojson.getSource().refresh();
+            overlay.setPosition(undefined);
+            closer.blur();
+            featureOverlay.getSource().clear() ;
+            map.updateSize()
+        }
+
+}
+
+function cancel_created() {
+
+    featureOverlay.getSource().clear();
+    geojson.getSource().removeFeature(myFeature);
+    overlay.setPosition(undefined);
+    closer.blur();
+
+}
+function modify_feature() {
+    //alert('change');
+    document.getElementById("get_info").style.backgroundColor = '';
+    map.un('singleclick', getinfo);
+    map.un('click', highlight);
+    overlay.setPosition(undefined);
+    closer.blur();
+
+    if (select_point) {
+        map.removeInteraction(select_point);
+    }
+    if (snap_edit) {
+        map.removeInteraction(snap_edit);
+    }
+    document.getElementById("select_feature").style.backgroundColor = '';
+    document.getElementById("create_feature").style.backgroundColor = '';
+    document.getElementById("modify_feature").style.backgroundColor = 'coral';
+    source_mod = featureOverlay.getSource();
+    modify = new ol.interaction.Modify({
+        source: source_mod
+    });
+    map.addInteraction(modify);
+
+    var source_g = geojson.getSource();
+    snap_edit = new ol.interaction.Snap({
+        source: source_g
+    });
+    map.addInteraction(snap_edit);
+    map.on('click', highlight_mod_attributes);
+
+}
+
+function save_mod_features() {
+
+    var name = document.getElementById("name").value;
+    var sub_city = document.getElementById("sub_city").value;
+
+    var feat_mod = featureOverlay.getSource().getFeatures();
+    //alert(del_feat);
+
+    var fid_feat_mod = feat_mod[0].getId();
+
+    var coords = feat_mod[0].getGeometry();
+    //alert(coords.toString());
+    var format = new ol.format.GML({
+        //featureNS: 'http://www.census.gov',
+        //  featurePrefix: 'tiger',
+        // featureType: 'tiger:tiger_roads',
+        srsName: 'urn:ogc:def:crs:EPSG::4326'
+
+    });
+    //var id = mod_features[i].getId();
+
+    var gml3 = format.writeGeometry(coords, {
+        //dataProjection: 'EPSG:4326',
+        featureProjection: 'urn:ogc:def:crs:EPSG::4326',
+        //rightHanded: false
+    });
+    //alert(fid_feat_att);
+    var url1 = 'http://localhost:8080/geoserver/wfs';
+    var method = 'POST';
+    var postData =
+        '<wfs:Transaction service="WFS" version="1.1.0"\n' +
+        'xmlns:etiopia="www.etiopia.com"\n' +
+        'xmlns:ogc="http://www.opengis.net/ogc"\n' +
+        'xmlns:wfs="http://www.opengis.net/wfs"\n' +
+        'xmlns:gml="http://www.opengis.net/gml"\n' +
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' +
+        'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/WFS-transaction.xsd">\n' +
+        '<wfs:Update typeName="etiopia:tourist_site">\n' +
+            '<wfs:Property>\n' +
+                '<wfs:Name>the_geom</wfs:Name>\n' +
+                '<wfs:Value>\n' +
+                gml3 + '\n' +
+                '</wfs:Value>\n' +
+            '</wfs:Property>\n' +
+        '<wfs:Property>\n' +
+            '<wfs:Name>name</wfs:Name>\n' +
+            '<wfs:Value>\n' +
+            name + '\n' +
+            '</wfs:Value>\n' +
+        '</wfs:Property>\n' +
+            '<wfs:Property>\n' +
+                '<wfs:Name>sub_city</wfs:Name>\n' +
+                '<wfs:Value>\n' +
+                sub_city + '\n' +
+                '</wfs:Value>\n' +
+            '</wfs:Property>\n' +
+        '<ogc:Filter>\n' +
+        '<ogc:FeatureId fid="' + fid_feat_mod + '"/>\n' +
+        '</ogc:Filter>\n' +
+        '</wfs:Update>\n' +
+        '</wfs:Transaction>\n';
+    //alert(postData);
+    console.log('Update Request')
+    var request=makeRequest(method,url,postData)
+    console.log(request)
+    if(request.status==200){
+        alert('Feature updated successfully');
+        geojson.getSource().refresh();
+        overlay.setPosition(undefined);
+        closer.blur();
+        featureOverlay.getSource().clear();
+    }
+
+}
+function cancel_mod_features() {
+
+    featureOverlay.getSource().clear();
+    overlay.setPosition(undefined);
+    closer.blur();
+
+}
+async function delete_feature() {
+    del_feat = featureOverlay.getSource().getFeatures();
+    // alert(del_feat);
+    var fid_del_feat = del_feat[0].getId();
+    // alert(fid_del_feat);
+    if (confirm('Are you sure you want to delete the selected feature?')) {
+        // Save it!
+        if (fid_del_feat == undefined) {
+            featureOverlay.getSource().removeFeature(del_feat[0]);
+            geojson.getSource().removeFeature(feature);
+        } else if (fid_del_feat != undefined) {
+            var featWMS = featureOverlay.getSource().getFeatureById(fid_del_feat);
+            var featWFS = geojson.getSource().getFeatureById(fid_del_feat);
+            //modifyControl.unselectFeature(feature);
+            geojson.getSource().removeFeature(featWFS);
+            featureOverlay.getSource().removeFeature(featWMS);
+            var method="POST"
+            var url="http://localhost:8080/geoserver/wfs"
+            var postData_del =
+                '<wfs:Transaction service="WFS" version="1.0.0"\n' +
+                'xmlns:cdf="http://www.opengis.net/cite/data"\n' +
+                'xmlns:ogc="http://www.opengis.net/ogc"\n' +
+                'xmlns:wfs="http://www.opengis.net/wfs"\n' +
+                'xmlns:topp="http://www.openplans.org/topp">\n' +
+                '<wfs:Delete typeName="etiopia:tourist_site">\n' +
+                '<ogc:Filter>\n' +
+                '<ogc:FeatureId fid="' + fid_del_feat + '"/>\n' +
+                '</ogc:Filter>\n' +
+                '</wfs:Delete>\n' +
+                '</wfs:Transaction>\n';
+            console.log("Starting request ...")
+            let request=await  makeRequest(method,url,postData_del)
+            console.log("status:", request.status)
+            console.log("response:", request.response)
+            console.log("status200 200")
+            geojson.getSource().refresh();
+            featureOverlay.getSource().refresh();
+            overlay.setPosition(undefined);
+            closer.blur();
+            alert("Feature deleted successfully!")
+
+        }
+}
+
+}
+function get_info() {
+    featureOverlay.getSource().clear();
+    overlay.setPosition(undefined);
+    closer.blur();
+    var color = $('#get_info').css("background-color");
+
+    if (color == 'rgb(239, 239, 239)') {
+        //alert(color);
+        if (modify) {
+            map.removeInteraction(modify);
+        }
+        if (select_point) {
+            map.removeInteraction(select_point);
+        }
+        if (snap_edit) {
+            map.removeInteraction(snap_edit);
+        }
+
+        document.getElementById("get_info").style.backgroundColor = 'coral';
+        document.getElementById("select_feature").style.backgroundColor = '';
+        document.getElementById("create_feature").style.backgroundColor = '';
+        document.getElementById("modify_feature").style.backgroundColor = '';
+        map.on('click', highlight);
+		map.un('click', highlight_mod_attributes);
+        map.on('singleclick', getinfo);
+
+    } else if (color == 'rgb(255, 127, 80)') {
+        //alert(color);
+        document.getElementById("get_info").style.backgroundColor = '';
+        map.un('singleclick', getinfo);
+        overlay.setPosition(undefined);
+        closer.blur();
+        //map.on('click', highlight);
+    }
+}
+function getinfo(evt) {
+    var coordinate = evt.coordinate;
+    var viewResolution = /** @type {number} */ (view.getResolution());
+    //alert(coordinate1);
+    $("#popup-content").empty();
+    document.getElementById('info').innerHTML = '';
+    var no_layers = overlays.getLayers().get('length');
+    // alert(no_layers);
+    var url = new Array();
+    var wmsSource = new Array();
+    var layer_title = new Array();
+    var i;
+    for (i = 0; i < no_layers; i++) {
+        //alert(overlays.getLayers().item(i).getVisible());
+        var visibility = overlays.getLayers().item(i).getVisible();
+        //alert(visibility);
+        if (visibility == true) {
+            //alert(i);
+            layer_title[i] = overlays.getLayers().item(i).get('title');
+            // alert(layer_title[i]);
+            wmsSource[i] = new ol.source.ImageWMS({
+                url: 'http://localhost:8080/geoserver/wms',
+                params: {
+                    'LAYERS': layer_title[i]
+                },
+                serverType: 'geoserver',
+                crossOrigin: 'anonymous'
+            });
+            url[i] = wmsSource[i].getFeatureInfoUrl(
+                evt.coordinate, viewResolution, 'EPSG:4326', {
+                    'INFO_FORMAT': 'text/html'
+                });
+            $.get(url[i], function(data) {
+                $("#popup-content").append(data);
+                overlay.setPosition(coordinate);
+                layerSwitcher.renderPanel();
+            });
+        }
+    }
+}
+// // const newSource=new ol.source.Vector({format: new ol.format.GeoJSON(),}),
+
+// // const vector = new ol.layer.Vector({
+// //   source: newSource,
+// //   style:  new ol.style.Circle({
+// //     fill:  new ol.style.Fill({
+// //       color: 'rgba(255, 255, 255, 0.2)',
+// //     }),
+// //     stroke: new ol.style.Stroke({
+// //       color: '#ffcc33',
+// //       width: 2,
+// //     }),
+// //     image: new ol.style.CircleStyle({
+// //       radius: 7,
+// //       fill: new ol.style.Fill({
+// //         color: '#ffcc33',
+// //       }),
+// //     }),
+// //   }),
+// // });
+
+let sketch;
+let helpTooltipElement;
+let helpTooltip;
+let measureTooltipElement;
+let measureTooltip;
+const continueLineMsg = 'Click to continue drawing the line';
+const unByKey=new ol.Observable.unByKey()
+
+function createHelpTooltip() {
+    if (helpTooltipElement) {
+        helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+    }
+    helpTooltipElement = document.createElement('div')
+    helpTooltipElement.className = 'ol-tooltip hidden';
+    helpTooltip = new ol.Overlay({
+        element: helpTooltipElement,
+        offset: [15, 0],
+        positioning: 'center-left',
+    });
+    map.addOverlay(helpTooltip);
+}
+
+function createMeasureTooltip() {
+    if (measureTooltipElement) {
+        measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+    }
+    measureTooltipElement = document.createElement('div');
+    measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+    measureTooltip = new ol.Overlay({
+        element: measureTooltipElement,
+        offset: [0, -15],
+        positioning: 'bottom-center',
+        stopEvent: false,
+        insertFirst: false,
+    });
+    map.addOverlay(measureTooltip);
+}
+
+const pointerMoveHandler = function (evt) {
+    console.log("handling pointer moving")
+    if (evt.dragging) {
+        return;
+    }
+    let helpMsg = 'Click to start drawing';
+    if (sketch) {
+        const geom = sketch.getGeometry();
+        if (geom instanceof new ol.geom.LineString()) {
+        helpMsg = continueLineMsg;
+        }
+    }
+    helpTooltipElement.innerHTML = helpMsg;
+    helpTooltip.setPosition(evt.coordinate);
+    helpTooltipElement.classList.remove('hidden');
+};
+map.on('pointermove', pointerMoveHandler);
+map.getViewport().addEventListener('mouseout', function () {
+  helpTooltipElement.classList.add('hidden');
+});
+const formatLength = function (line) {
+
+//   var length = ol.Sphere.getLength(line)
+//   let output;
+//   if (length > 100) {
+//     output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
+//   } else {
+//     output = Math.round(length * 100) / 100 + ' ' + 'm';
+//   }
+//   return output;
+    var coordinates=line.getCoordinates()
+    var length=0
+    var sourceProj=map.getView().getProjection()
+    for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+      var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
+      var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
+      var line=new ol.geom.LineString([c1 , c2]);
+      length += (line.getLength())
+    }
+    var output;
+    if (length > 100) {
+        output = (Math.round(length / 1000 * 100) / 100) +
+            ' ' + 'km';
+    } else {
+        output = (Math.round(length * 100)) +
+            ' ' + 'km';
+    }
+    return output;
+};
+
+function measureDistance() {
+    let newSource=new ol.source.Vector({format: new ol.format.GeoJSON(),})
+    const draw = new ol.interaction.Draw({
+        source: newSource,
+        type: 'LineString',
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({color: 'rgba(255, 25, 255,0.8)',}),
+            stroke: new ol.style.Stroke({color: 'rgba(255, 255, 255)',lineDash: [5, 5],width: 4,}),
+            image: new ol.style.Circle({radius: 5,stroke: new ol.style.Stroke({color: 'rgba(255, 255, 255)',}),fill: new ol.style.Fill({color: 'rgba(255, 255, 255)',}),}),
+        }),
+    });
+    map.addInteraction(draw);
+    createMeasureTooltip();
+    createHelpTooltip();
+    // let listener;
+    // draw.on('drawstart', function (evt) {
+    //     console.log("drawing started")
+    //     // set sketch
+    //     sketch = evt.feature;
+
+    //     /** @type {import("../src/ol/coordinate.js").Coordinate|undefined} */
+    //     let tooltipCoord = evt.coordinate;
+
+    //     listener = sketch.getGeometry().on('change', function (evt) {
+    //     const geom = evt.target;
+    //     let output;
+    //     if (geom instanceof new ol.geom.LineString()) {
+    //         output = formatLength(geom);
+    //         tooltipCoord = geom.getLastCoordinate();
+    //     }
+    //     measureTooltipElement.innerHTML = output;
+    //     measureTooltip.setPosition(tooltipCoord);
+    //     });
+    // },this);
+    // draw.on('drawend', function () {
+    //     console.log("drawing finished")
+    //     measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+    //     measureTooltip.setOffset([0, -7]);
+    //     // unset sketch
+    //     sketch = null;
+    //     // unset tooltip so that a new one can be created
+    //     measureTooltipElement = null;
+    //     createMeasureTooltip();
+    //     ol.Observable.unByKey(listener);
+    // },this);
+    var listener;
+  draw.on('drawstart',
+      function(evt) {
+        // set sketch
+        sketch = evt.feature;
+
+        /** @type {ol.Coordinate|undefined} */
+        var tooltipCoord = evt.coordinate;
+
+        listener = sketch.getGeometry().on('change', function(evt) {
+          var geom = evt.target;
+          var output;
+          if (geom instanceof ol.geom.Polygon) {
+            output = formatArea(/** @type {ol.geom.Polygon} */ (geom));
+            tooltipCoord = geom.getInteriorPoint().getCoordinates();
+          } else if (geom instanceof ol.geom.LineString) {
+            output = formatLength( /** @type {ol.geom.LineString} */ (geom));
+            tooltipCoord = geom.getLastCoordinate();
+          }
+          measureTooltipElement.innerHTML = output;
+          measureTooltip.setPosition(tooltipCoord);
+        });
+      }, this);
+
+  draw.on('drawend',
+      function(evt) {
+        measureTooltipElement.className = 'tooltip tooltip-static';
+        measureTooltip.setOffset([0, -7]);
+        // unset sketch
+        sketch = null;
+        // unset tooltip so that a new one can be created
+        measureTooltipElement = null;
+        createMeasureTooltip();
+        ol.Observable.unByKey(listener);
+      }, this);
+
+}
+</script>
+<script src="./query.js"></script>
+</body> 
+</html>
